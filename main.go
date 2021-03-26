@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"log"
 	"time"
@@ -61,11 +62,21 @@ func main() {
 	if err := k8sClient.Create(context.TODO(), cmA); err != nil {
 		log.Fatal(err)
 	}
+	data, err := json.MarshalIndent(cmA, "", " ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Displaying ConfigMap A json:\n%s\n", data)
 
 	log.Println("Creating ConfigMap B")
 	if err := k8sClient.Create(context.TODO(), cmB); err != nil {
 		log.Fatal(err)
 	}
+	data, err = json.MarshalIndent(cmB, "", " ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Displaying ConfigMap B json:\n%s\n", data)
 
 	// set the owner of config map b = a.
 	log.Println("Setting ConfigMap B to have ConfigMap A as its controller reference")
@@ -75,6 +86,12 @@ func main() {
 	if err := k8sClient.Update(context.TODO(), cmB); err != nil {
 		log.Fatal(err)
 	}
+
+	data, err = json.MarshalIndent(cmB, "", " ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Displaying updated ConfigMap B json:\n%s\n", data)
 
 	// Delete config map a
 	log.Println("Deleting ConfigMap A")
